@@ -1,0 +1,217 @@
+{
+  "properties": {
+    "request": {
+      "type": "string",
+      "enum": ["attach", "launch"],
+      "description": "Debug adapter request type"
+    },
+    "program": {
+      "type": "string",
+      "description": "Path to the program to debug or attach to"
+    },
+    "args": {
+      "type": "array",
+      "description": "An array of command line argument strings to be passed to the program being launched",
+      "items": {
+        "type": "string"
+      }
+    },
+    "cwd": {
+      "type": "string",
+      "description": "The program working directory"
+    },
+    "env": {
+      "type": "object",
+      "description": "Environment variables to set when launching the program. The format of each environment variable string is \"VAR=VALUE\" for environment variables with values or just \"VAR\" for environment variables with no values",
+      "patternProperties": {
+        ".*": {
+          "type": "string"
+        }
+      }
+    },
+    "stopOnEntry": {
+      "type": "boolean",
+      "description": "Whether to stop program immediately after launching",
+      "default": false
+    },
+    "runInTerminal": {
+      "type": "boolean",
+      "description": "Launch the program inside an integrated terminal in the IDE. Useful for debugging interactive command line programs",
+      "default": false
+    },
+    "sourcePath": {
+      "type": "string",
+      "description": "Specify a source path to remap \"./\" to allow full paths to be used when setting breakpoints in binaries that have relative source paths"
+    },
+    "sourceMap": {
+      "type": "array",
+      "description": "Specify an array of path re-mappings. Each element in the array must be a two element array containing a source and destination pathname. Overrides sourcePath",
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "minItems": 2,
+        "maxItems": 2
+      }
+    },
+    "debuggerRoot": {
+      "type": "string",
+      "description": "Specify a working directory to use when launching lldb-dap. If the debug information in your executable contains relative paths, this option can be used so that lldb-dap can find source files and object files that have relative paths"
+    },
+    "commandEscapePrefix": {
+      "type": "string",
+      "description": "The escape prefix to use for executing regular LLDB commands in the Debug Console, instead of printing variables. Defaults to a backtick. If it's an empty string, then all expression in the Debug Console are treated as regular LLDB commands"
+    },
+    "customFrameFormat": {
+      "type": "string",
+      "description": "If non-empty, stack frames will have descriptions generated based on the provided format. See https://lldb.llvm.org/use/formatting.html for an explanation on format strings for frames"
+    },
+    "customThreadFormat": {
+      "type": "string",
+      "description": "Same as customFrameFormat, but for threads instead of stack frames"
+    },
+    "displayExtendedBacktrace": {
+      "type": "boolean",
+      "description": "Enable language specific extended backtraces",
+      "default": false
+    },
+    "enableAutoVariableSummaries": {
+      "type": "boolean",
+      "description": "Enable auto generated summaries for variables when no summaries exist for a given type. This feature can cause performance delays in large projects when viewing variables",
+      "default": false
+    },
+    "enableSyntheticChildDebugging": {
+      "type": "boolean",
+      "description": "If a variable is displayed using a synthetic children, also display the actual contents of the variable at the end under a [raw] entry. This is useful when creating synthetic child plug-ins as it lets you see the actual contents of the variable",
+      "default": false
+    },
+    "initCommands": {
+      "type": "array",
+      "description": "LLDB commands executed upon debugger startup prior to creating the LLDB target",
+      "items": {
+        "type": "string"
+      }
+    },
+    "preRunCommands": {
+      "type": "array",
+      "description": "LLDB commands executed just before launching/attaching, after the LLDB target has been created",
+      "items": {
+        "type": "string"
+      }
+    },
+    "postRunCommands": {
+      "type": "array",
+      "description": "LLDB commands executed just after the program has been launched",
+      "items": {
+        "type": "string"
+      }
+    },
+    "stopCommands": {
+      "type": "array",
+      "description": "LLDB commands executed just after each stop",
+      "items": {
+        "type": "string"
+      }
+    },
+    "exitCommands": {
+      "type": "array",
+      "description": "LLDB commands executed when the program exits",
+      "items": {
+        "type": "string"
+      }
+    },
+    "terminateCommands": {
+      "type": "array",
+      "description": "LLDB commands executed when the debugging session ends",
+      "items": {
+        "type": "string"
+      }
+    },
+    "launchCommands": {
+      "type": "array",
+      "description": "LLDB commands executed to launch the program",
+      "items": {
+        "type": "string"
+      }
+    },
+    "attachCommands": {
+      "type": "array",
+      "description": "LLDB commands that will be executed after preRunCommands which take place of the code that normally does the attach. The commands can create a new target and attach or launch it however desired. This allows custom launch and attach configurations. Core files can use target create --core /path/to/core to attach to core files",
+      "items": {
+        "type": "string"
+      }
+    },
+    "pid": {
+      "type": ["integer", "string"],
+      "description": "The process id of the process you wish to attach to. If pid is omitted, the debugger will attempt to attach to the program by finding a process whose file name matches the file name from program. Setting this value to ${command:pickMyProcess} will allow interactive process selection in the IDE"
+    },
+    "waitFor": {
+      "type": "boolean",
+      "description": "Wait for the process to launch",
+      "default": false
+    },
+    "coreFile": {
+      "type": "string",
+      "description": "Path to the core dump file to load"
+    },
+    "gdb-remote-port": {
+      "type": "integer",
+      "description": "Port number for connecting to a debug server on the current machine"
+    },
+    "gdb-remote-hostname": {
+      "type": "string",
+      "description": "Hostname for connecting to a debug server on another machine. Defaults to localhost"
+    }
+  },
+  "required": ["request"],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "request": {
+            "enum": ["launch"]
+          }
+        }
+      },
+      "then": {
+        "oneOf": [
+          {
+            "required": ["program"]
+          },
+          {
+            "required": ["launchCommands"]
+          }
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "request": {
+            "enum": ["attach"]
+          }
+        }
+      },
+      "then": {
+        "anyOf": [
+          {
+            "required": ["pid"]
+          },
+          {
+            "required": ["program"]
+          },
+          {
+            "required": ["coreFile"]
+          },
+          {
+            "required": ["attachCommands"]
+          },
+          {
+            "required": ["gdb-remote-port"]
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+id = "mojo"
+name = "Mojo"
+description = "Mojo support."
+version = "0.0.1"
+schema_version = 1
+authors = ["Ayush Shukla <ayush@shuklaayu.sh>"]
+repository = "https://github.com/shuklaayush/zed-mojo"
+
+[grammars.mojo]
+repository = "https://github.com/lsh/tree-sitter-mojo"
+commit = "564d5a8489e20e5f723020ae40308888699055c0"
+
+[language_servers.mojo-lsp]
+name = "mojo-lsp"
+language = "Mojo"
+
+[debug_adapters.mojo-lldb]
+schema_path = "debug_adapter_schemas/mojo-lldb.json"
